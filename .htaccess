@@ -1,0 +1,14 @@
+# HTID:14357529: DO NOT REMOVE OR MODIFY THIS LINE AND THE LINES BELOW
+php_value display_errors 1
+# DO NOT REMOVE OR MODIFY THIS LINE AND THE LINES ABOVE HTID:14357529:
+
+RewriteEngine On
+
+RewriteRule ^(index|contact|registration|search|login)$ $1.php [NC,L]
+
+RewriteRule ^post/(\d+)$ post.php?p_id=$1 [NC,L]
+
+RewriteRule ^category/(\d+)$ category.php?category=$1 [NC,L]
+
+RewriteRule ^author_posts/(\w+)$ author_posts.php?author=$1 [NC,L]
+

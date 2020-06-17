@@ -1,0 +1,10 @@
+{
+    "name": "root/cms",
+    "authors": [
+        {
+            "name": "Shreyas Ikhar",
+            "email": "shreyasikhar26@gmail.com"
+        }
+    ],
+    "require": {}
+}
