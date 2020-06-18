@@ -1,11 +1,17 @@
 <?php ob_start(); ?>
 <?php  include "includes/header.php"; ?>
 <?php  include "includes/db.php"; ?>
+<?php 
+    use PHPMailer\PHPMailer\PHPMailer; 
+    // use PHPMailer\PHPMailer\SMTP;
+    use PHPMailer\PHPMailer\Exception;
+?>  
 <?php
     if(isset($_SESSION['username']))
     {
         header('location:/');
     }
+    require './vendor/autoload.php';
 ?>
 <?php
     // Setting language variables 
@@ -74,8 +80,44 @@
         if(empty($error))
         {
             register_user($username, $email, $password);
+            $result = query("select otp from users where user_email='$email'");
+            $row = mysqli_fetch_array($result);
+            $otpmail = $row['otp'];
+            /*
+                Configure PHPMailer
+            */
+            $mail = new PHPMailer();
+            //$mail->SMTPDebug = SMTP::DEBUG_SERVER;                      
+            //$mail->SMTPDebug = 2;                      
+            $mail->isSMTP();                                           
+            $mail->Host       = Config::SMTP_HOST;                    
+            $mail->Username   = Config::SMTP_USER;                    
+            $mail->Password   = Config::SMTP_PASSWORD; 
+            $mail->Port       = Config::SMTP_PORT;                              
+            $mail->SMTPSecure = 'ssl';           
+            $mail->SMTPAuth   = true;  
+            $mail->isHTML(true);  
+            $mail->CharSet = 'UTF-8'; 
+            
+            $mail->setFrom('enlectic@gmail.com', 'Blog Admin');
+            $mail->addAddress($email, "Blog User");
+            $mail->Subject = 'Verify Email using OTP';
+            $mail->Body = '<p>Your OTP is '. $otpmail .'.<br/>Please click to enter OTP and verify email
+            <a href="https://blog-by-shreyas.000webhostapp.com/checkemail.php?email='.$email.'">https://blog-by-shreyas.000webhostapp.com/checkemail.php?email='.$email.'</a>
+            </p>';
+
+            if($mail->send())
+            {
+                $emailSent = true;
+                $emailmsg= "You will receive email for verification";
+            }
+            else
+            {
+                echo 'Not sent';
+            }
+
             // login_user($username, $password);
-            login_user($_POST['username'], $_POST['password']);
+            // login_user($_POST['username'], $_POST['password']);
         }
 
     }
@@ -106,6 +148,7 @@
             <div class="col-sm-8 col-sm-offset-2 col-xs-10 col-xs-offset-1">
                 <div class="form-wrap">
                 <h1><?php echo _REGISTER; ?></h1>
+                <h3 class="bg-success"><?php if(isset($emailmsg)) echo $emailmsg; ?></h3>
                     <form role="form" action="registration.php" method="post" id="login-form" autocomplete="off">
 
                         <div class="form-group">
