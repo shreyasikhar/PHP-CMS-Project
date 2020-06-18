@@ -27,6 +27,17 @@ if(ifItIsMethod('post'))
 	{
 		$error['credentials'] = 'Wrong credentials entered';
 	}
+	$result = query("select flag from users where username='$username'");
+	$row = mysqli_fetch_array($result);
+	if(mysqli_num_rows($result) > 0)
+	{
+		$flag = $row['flag'];
+		if(!$flag)
+		{
+			$error['credentials'] = 'Email not verified, Register again with your email';
+			query("delete from users where username='$username'");
+		}
+	}
 	foreach($error as $key => $value)
     {
         if(empty($value))
